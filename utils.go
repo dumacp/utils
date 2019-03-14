@@ -60,4 +60,26 @@ func FinishChannel(chs ... chan interface{}) {
 	}
 }
 
+func NewTee(it itertools.Iter, n, lenBuffer int) []itertools.Iter {
+
+        if lenBuffer > 30 {
+                panic("maxim lenBuffer allow is 30")
+        }
+
+
+        iters := make([]itertools.Iter, n)
+        for i := 0; i < n; i++ {
+                iters[i] = make(itertools.Iter, lenBuffer)
+        }
+        go func() {
+                for newval := range it {
+                        for _, v := range iters {
+                                v <- newval
+                        }
+                }
+        }()
+        return iters
+}
+
+
 
